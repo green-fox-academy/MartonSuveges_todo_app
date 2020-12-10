@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,11 +27,19 @@ public class Main {
       printList();
     } else if (args[0].equals("-a")) {
       addTask(args);
+    } else if (args[0].equals("-r")) {
+      removeTask(args);
     }
   }
 
+  private static void removeTask(String[] args) {
+    int index = Integer.parseInt(args[1]) - 1;
+    ArrayList<String> lines = getDataFromFile();
+    lines.remove(index);
+    writeToFile(lines);
+  }
+
   private static void addTask(String[] args) {
-    Path path = Paths.get("todo.txt");
 
     if (args.length < 2 || args[1].equals("")) {
       System.out.println("Nem lehetséges új feladat hozzáadása: nincs megadva a feladat!");
@@ -38,22 +47,29 @@ public class Main {
     }
 
     String taskName = "\n" + args[1];
+    appendToFile(Collections.singleton(taskName));
+  }
+
+  private static void appendToFile(Iterable output) {
+    Path path = Paths.get("todo.txt");
     try {
-      Files.write(path, taskName.getBytes(), StandardOpenOption.APPEND);
+      Files.write(path, output, StandardOpenOption.APPEND);
     } catch (IOException e) {
       throw new RuntimeException("Can't write to " + path.toAbsolutePath().toString());
     }
-    System.out.println("OK");
+  }
+
+  private static void writeToFile(Iterable output) {
+    Path path = Paths.get("todo.txt");
+    try {
+      Files.write(path, output);
+    } catch (IOException e) {
+      throw new RuntimeException("Can't write to " + path.toAbsolutePath().toString());
+    }
   }
 
   private static void printList() {
-    Path path = Paths.get("todo.txt");
-    ArrayList<String> lines;
-    try {
-      lines = new ArrayList<>(Files.readAllLines(path));
-    } catch (IOException e) {
-      throw new RuntimeException("Can't read from " + path.toAbsolutePath().toString());
-    }
+    ArrayList<String> lines = getDataFromFile();
 
     if (lines.size() == 0) {
       System.out.println("Nincs mára tennivalód! :)");
@@ -63,6 +79,17 @@ public class Main {
     for (int i = 1; i <= lines.size(); i++) {
       System.out.println(i + " - " + lines.get(i - 1));
     }
+  }
+
+  private static ArrayList<String> getDataFromFile() {
+    Path path = Paths.get("todo.txt");
+    ArrayList<String> lines;
+    try {
+      lines = new ArrayList<>(Files.readAllLines(path));
+    } catch (IOException e) {
+      throw new RuntimeException("Can't read from " + path.toAbsolutePath().toString());
+    }
+    return lines;
   }
 
   public static String checkArg(String arg) {
