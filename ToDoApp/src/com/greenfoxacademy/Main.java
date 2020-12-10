@@ -32,6 +32,11 @@ public class Main {
   private static void addTask(String[] args) {
     Path path = Paths.get("todo.txt");
 
+    if (args.length < 2 || args[1].equals("")) {
+      System.out.println("Nem lehetséges új feladat hozzáadása: nincs megadva a feladat!");
+      return;
+    }
+
     String taskName = "\n" + args[1];
     try {
       Files.write(path, taskName.getBytes(), StandardOpenOption.APPEND);
