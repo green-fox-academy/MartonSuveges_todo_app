@@ -40,6 +40,11 @@ public class Main {
       throw new RuntimeException("Can't find " + path.toAbsolutePath().toString());
     }
 
+    if (lines.size() == 0) {
+      System.out.println("Nincs mára tennivalód! :)");
+      return;
+    }
+
     for (int i = 1; i <= lines.size(); i++) {
       System.out.println(i + " - " + lines.get(i - 1));
     }
