@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,12 +24,21 @@ public class Main {
       //TODO: implement unsupported argument handling
     } else if (args[0].equals("-l")) {
       printList();
+    } else if (args[0].equals("-a")) {
+      addTask(args);
     }
-//    System.out.println("Hello!");
-//    System.out.println(Arrays.toString(args));
-//
-//    Path path = Paths.get("");
-//    System.out.println(path.toAbsolutePath());
+  }
+
+  private static void addTask(String[] args) {
+    Path path = Paths.get("todo.txt");
+
+    String taskName = "\n" + args[1];
+    try {
+      Files.write(path, taskName.getBytes(), StandardOpenOption.APPEND);
+    } catch (IOException e) {
+      throw new RuntimeException("Can't write to " + path.toAbsolutePath().toString());
+    }
+    System.out.println("OK");
   }
 
   private static void printList() {
@@ -37,7 +47,7 @@ public class Main {
     try {
       lines = new ArrayList<>(Files.readAllLines(path));
     } catch (IOException e) {
-      throw new RuntimeException("Can't find " + path.toAbsolutePath().toString());
+      throw new RuntimeException("Can't read from " + path.toAbsolutePath().toString());
     }
 
     if (lines.size() == 0) {
