@@ -39,6 +39,10 @@ public class Main {
     }
     int index = Integer.parseInt(args[1]) - 1;
     ArrayList<String> lines = getDataFromFile();
+    if (index >= lines.size()) {
+      System.out.println("Nem lehetséges az eltávolítás: túlindexelési probléma adódott!");
+      return;
+    }
     lines.remove(index);
     writeToFile(lines);
   }
