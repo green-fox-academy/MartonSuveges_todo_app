@@ -33,6 +33,10 @@ public class Main {
   }
 
   private static void removeTask(String[] args) {
+    if (args.length < 2) {
+      System.out.println("Nem lehetséges az eltávolítás: nem adott meg indexet!");
+      return;
+    }
     int index = Integer.parseInt(args[1]) - 1;
     ArrayList<String> lines = getDataFromFile();
     lines.remove(index);
