@@ -22,7 +22,8 @@ public class Main {
     if (args.length == 0) {
       System.out.println(userInstructions());
     } else if (checkArg(args[0]) == null) {
-      //TODO: implement unsupported argument handling
+      System.out.println("Nem támogatott argumentum!");
+      System.out.println(userInstructions());
     } else if (args[0].equals("-l")) {
       printList();
     } else if (args[0].equals("-a")) {
