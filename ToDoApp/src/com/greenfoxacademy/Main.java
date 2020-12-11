@@ -37,12 +37,21 @@ public class Main {
       System.out.println("Nem lehetséges az eltávolítás: nem adott meg indexet!");
       return;
     }
-    int index = Integer.parseInt(args[1]) - 1;
+
+    int index;
+    try {
+      index = Integer.parseInt(args[1]) - 1;
+    } catch (NumberFormatException numberFormatException) {
+      System.out.println("Nem lehetséges az eltávolítás: a megadott index nem szám!");
+      return;
+    }
+
     ArrayList<String> lines = getDataFromFile();
     if (index >= lines.size()) {
       System.out.println("Nem lehetséges az eltávolítás: túlindexelési probléma adódott!");
       return;
     }
+
     lines.remove(index);
     writeToFile(lines);
   }
