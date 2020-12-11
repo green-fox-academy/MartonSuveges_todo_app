@@ -21,4 +21,8 @@ public class ToDoTask {
   public String toString() {
     return "[" + (isDone ? "X" : " ") + "] " + name;
   }
+
+  public void doTask() {
+    this.isDone = true;
+  }
 }

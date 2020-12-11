@@ -14,19 +14,46 @@ public class Main {
 
   private static final String dataRelativePath = "todo.txt";
   private static LinkedHashMap<String, String> argDescriptions = new LinkedHashMap<>();
+  private static ToDoList toDoList;
 
   public static void main(String[] args) {
     initArgDescriptions();
     if (checkArg(args) != null) {
-      ToDoList toDoList = new ToDoList(getDataFromFile());
+      toDoList = new ToDoList(getDataFromFile());
       if (args[0].equals("-l")) {
         System.out.println(toDoList);
       } else if (args[0].equals("-a")) {
         addTask(args);
       } else if (args[0].equals("-r")) {
         removeTask(args);
+      } else if (args[0].equals("-c")) {
+        completeTask(args);
       }
     }
+  }
+
+  private static void completeTask(String[] args) {
+    if (args.length < 2) {
+      System.out.println("Nem lehetséges a feladat végrehajtása: nem adtál meg indexet!");
+      return;
+    }
+
+    int index;
+    try {
+      index = Integer.parseInt(args[1]) - 1;
+    } catch (NumberFormatException numberFormatException) {
+      System.out.println("Nem lehetséges a feladat végrehajtása: a megadott index nem szám");
+      return;
+    }
+
+    if (index >= toDoList.size()) {
+      System.out.println("Nem lehetséges a feladat végrehajtása: túlindexelési probléma adódott!");
+      return;
+    }
+
+    toDoList.doTask(index);
+
+    writeToFile(toDoList.exportToFile());
   }
 
   private static void initArgDescriptions() {

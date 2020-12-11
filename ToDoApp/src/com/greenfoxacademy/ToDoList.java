@@ -13,8 +13,19 @@ public class ToDoList {
 
   public ToDoList(ArrayList<String> importSource) {
     for (String line : importSource) {
-      toDoList.add(parseLine(line));
+      ToDoTask toDoTask = parseLine(line);
+      if (toDoTask != null) {
+        toDoList.add(toDoTask);
+      }
     }
+  }
+
+  public void doTask(int index) {
+    toDoList.get(index).doTask();
+  }
+
+  public int size() {
+    return toDoList.size();
   }
 
   public ArrayList<String> exportToFile() {
@@ -39,6 +50,9 @@ public class ToDoList {
   }
 
   private ToDoTask parseLine(String line) {
+    if (line.length() < 1) {
+      return null;
+    }
     boolean isDone = false;
     String name;
     String firstLetter = line.substring(0, 1);
