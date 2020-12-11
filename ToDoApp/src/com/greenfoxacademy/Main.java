@@ -12,25 +12,28 @@ import java.util.Map;
 
 public class Main {
 
+  private static final String dataRelativePath = "todo.txt";
   private static LinkedHashMap<String, String> argDescriptions = new LinkedHashMap<>();
 
   public static void main(String[] args) {
+    initArgDescriptions();
+    if (checkArg(args) != null) {
+      ToDoList toDoList = new ToDoList(getDataFromFile());
+      if (args[0].equals("-l")) {
+        System.out.println(toDoList);
+      } else if (args[0].equals("-a")) {
+        addTask(args);
+      } else if (args[0].equals("-r")) {
+        removeTask(args);
+      }
+    }
+  }
+
+  private static void initArgDescriptions() {
     argDescriptions.put("-l", "Kilistázza a feladatokat");
     argDescriptions.put("-a", "Új feladatot ad hozzá");
     argDescriptions.put("-r", "Eltávolít egy feladatot");
     argDescriptions.put("-c", "Teljesít egy feladatot");
-    if (args.length == 0) {
-      System.out.println(userInstructions());
-    } else if (checkArg(args[0]) == null) {
-      System.out.println("Nem támogatott argumentum!");
-      System.out.println(userInstructions());
-    } else if (args[0].equals("-l")) {
-      printList();
-    } else if (args[0].equals("-a")) {
-      addTask(args);
-    } else if (args[0].equals("-r")) {
-      removeTask(args);
-    }
   }
 
   private static void removeTask(String[] args) {
@@ -69,7 +72,7 @@ public class Main {
   }
 
   private static void appendToFile(Iterable output) {
-    Path path = Paths.get("todo.txt");
+    Path path = Paths.get(dataRelativePath);
     try {
       Files.write(path, output, StandardOpenOption.APPEND);
     } catch (IOException e) {
@@ -78,7 +81,7 @@ public class Main {
   }
 
   private static void writeToFile(Iterable output) {
-    Path path = Paths.get("todo.txt");
+    Path path = Paths.get(dataRelativePath);
     try {
       Files.write(path, output);
     } catch (IOException e) {
@@ -86,21 +89,8 @@ public class Main {
     }
   }
 
-  private static void printList() {
-    ArrayList<String> lines = getDataFromFile();
-
-    if (lines.size() == 0) {
-      System.out.println("Nincs mára tennivalód! :)");
-      return;
-    }
-
-    for (int i = 1; i <= lines.size(); i++) {
-      System.out.println(i + " - " + lines.get(i - 1));
-    }
-  }
-
   private static ArrayList<String> getDataFromFile() {
-    Path path = Paths.get("todo.txt");
+    Path path = Paths.get(dataRelativePath);
     ArrayList<String> lines;
     try {
       lines = new ArrayList<>(Files.readAllLines(path));
@@ -110,12 +100,16 @@ public class Main {
     return lines;
   }
 
-  public static String checkArg(String arg) {
-    for (String key : argDescriptions.keySet()) {
-      if (arg.equals(key)) {
-        return key;
+  public static String checkArg(String[] args) {
+    if (args.length != 0) {
+      for (String key : argDescriptions.keySet()) {
+        if (args[0].equals(key)) {
+          return key;
+        }
       }
+      System.out.println("Nem támogatott argumentum!");
     }
+    System.out.println(userInstructions());
     return null;
   }
 

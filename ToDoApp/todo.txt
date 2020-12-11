@@ -1,4 +1,4 @@
-Kutyát sétáltatni
-Tejet venni
-Megcsinálni a leckét
-kecske
+1Kutyát sétáltatni
+0Tejet venni
+0Megcsinálni a leckét
+1kecske
