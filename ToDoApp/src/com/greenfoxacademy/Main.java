@@ -32,35 +32,46 @@ public class Main {
     }
   }
 
-  private static void completeTask(String[] args) {
-    if (args.length < 2) {
-      System.out.println("Nem lehetséges a feladat végrehajtása: nem adtál meg indexet!");
-      return;
-    }
-
-    int index;
-    try {
-      index = Integer.parseInt(args[1]) - 1;
-    } catch (NumberFormatException numberFormatException) {
-      System.out.println("Nem lehetséges a feladat végrehajtása: a megadott index nem szám");
-      return;
-    }
-
-    if (index >= toDoList.size()) {
-      System.out.println("Nem lehetséges a feladat végrehajtása: túlindexelési probléma adódott!");
-      return;
-    }
-
-    toDoList.doTask(index);
-
-    writeToFile(toDoList.exportToFile());
-  }
-
   private static void initArgDescriptions() {
     argDescriptions.put("-l", "Kilistázza a feladatokat");
     argDescriptions.put("-a", "Új feladatot ad hozzá");
     argDescriptions.put("-r", "Eltávolít egy feladatot");
     argDescriptions.put("-c", "Teljesít egy feladatot");
+  }
+
+  public static String checkArg(String[] args) {
+    if (args.length != 0) {
+      for (String key : argDescriptions.keySet()) {
+        if (args[0].equals(key)) {
+          return key;
+        }
+      }
+      System.out.println("Nem támogatott argumentum!");
+    }
+    System.out.println(userInstructions());
+    return null;
+  }
+
+  private static ArrayList<String> getDataFromFile() {
+    Path path = Paths.get(dataRelativePath);
+    ArrayList<String> lines;
+    try {
+      lines = new ArrayList<>(Files.readAllLines(path));
+    } catch (IOException e) {
+      throw new RuntimeException("Can't read from " + path.toAbsolutePath().toString());
+    }
+    return lines;
+  }
+
+  private static void addTask(String[] args) {
+
+    if (args.length < 2 || args[1].equals("")) {
+      System.out.println("Nem lehetséges új feladat hozzáadása: nincs megadva a feladat!");
+      return;
+    }
+
+    String taskName = "\n" + args[1];
+    appendToFile(Collections.singleton(taskName));
   }
 
   private static void removeTask(String[] args) {
@@ -87,15 +98,28 @@ public class Main {
     writeToFile(lines);
   }
 
-  private static void addTask(String[] args) {
-
-    if (args.length < 2 || args[1].equals("")) {
-      System.out.println("Nem lehetséges új feladat hozzáadása: nincs megadva a feladat!");
+  private static void completeTask(String[] args) {
+    if (args.length < 2) {
+      System.out.println("Nem lehetséges a feladat végrehajtása: nem adtál meg indexet!");
       return;
     }
 
-    String taskName = "\n" + args[1];
-    appendToFile(Collections.singleton(taskName));
+    int index;
+    try {
+      index = Integer.parseInt(args[1]) - 1;
+    } catch (NumberFormatException numberFormatException) {
+      System.out.println("Nem lehetséges a feladat végrehajtása: a megadott index nem szám");
+      return;
+    }
+
+    if (index >= toDoList.size()) {
+      System.out.println("Nem lehetséges a feladat végrehajtása: túlindexelési probléma adódott!");
+      return;
+    }
+
+    toDoList.doTask(index);
+
+    writeToFile(toDoList.exportToFile());
   }
 
   private static void appendToFile(Iterable output) {
@@ -114,30 +138,6 @@ public class Main {
     } catch (IOException e) {
       throw new RuntimeException("Can't write to " + path.toAbsolutePath().toString());
     }
-  }
-
-  private static ArrayList<String> getDataFromFile() {
-    Path path = Paths.get(dataRelativePath);
-    ArrayList<String> lines;
-    try {
-      lines = new ArrayList<>(Files.readAllLines(path));
-    } catch (IOException e) {
-      throw new RuntimeException("Can't read from " + path.toAbsolutePath().toString());
-    }
-    return lines;
-  }
-
-  public static String checkArg(String[] args) {
-    if (args.length != 0) {
-      for (String key : argDescriptions.keySet()) {
-        if (args[0].equals(key)) {
-          return key;
-        }
-      }
-      System.out.println("Nem támogatott argumentum!");
-    }
-    System.out.println(userInstructions());
-    return null;
   }
 
   public static String userInstructions() {
