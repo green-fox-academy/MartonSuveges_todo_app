@@ -30,10 +30,9 @@ public class ArgumentHandler {
       Command command = commands.get(i);
       if (command.getCallArg().equals(args[argIndex])) {
         switch (command.getArgType()) {
-          case NULL: {
+          case NULL:
             return 0;
-          }
-          case INDEX: {
+          case INDEX:
             if (args.length < argIndex + 1) {
               System.out.println("Nem lehetséges a parancs végrehajtása: nem adott meg indexet!");
               return -1;
@@ -54,14 +53,12 @@ public class ArgumentHandler {
             }
 
             return 1;
-          }
-          case STRING: {
+          case STRING:
             if (args.length < argIndex + 1 || args[argIndex + 1].equals("")) {
               System.out.println("Nem lehetséges parancs végrehajtása: nincs megadva a feladat!");
               return -1;
             }
             return 1;
-          }
         }
       }
     }
@@ -71,10 +68,14 @@ public class ArgumentHandler {
   }
 
   private void initArgData() {
-    commands.add(new Command("-l", "Kilistázza a feladatokat", ArgTypes.NULL));
-    commands.add(new Command("-a", "Új feladatot ad hozzá", ArgTypes.STRING));
-    commands.add(new Command("-r", "Eltávolít egy feladatot", ArgTypes.INDEX));
-    commands.add(new Command("-c", "Teljesít egy feladatot", ArgTypes.INDEX));
+    commands.add(new Command(
+        "-l", "Kilistázza a feladatokat", ArgTypes.NULL, CommandFunctions::listTasks));
+    commands.add(new Command(
+        "-a", "Új feladatot ad hozzá", ArgTypes.STRING, CommandFunctions::addTask));
+    commands.add(new Command(
+        "-r", "Eltávolít egy feladatot", ArgTypes.INDEX, CommandFunctions::removeTask));
+    commands.add(new Command(
+        "-c", "Teljesít egy feladatot", ArgTypes.INDEX, CommandFunctions::completeTask));
   }
 
   public String userInstructions() {
@@ -83,11 +84,7 @@ public class ArgumentHandler {
     builder.append("=============================\n\n");
     builder.append("Parancssori argumentumok:\n");
     for (Command command : commands) {
-      builder.append("\t")
-          .append(command.getCallArg())
-          .append("\t ")
-          .append(command.getDescription())
-          .append("\n");
+      builder.append(command);
     }
     return builder.toString();
   }

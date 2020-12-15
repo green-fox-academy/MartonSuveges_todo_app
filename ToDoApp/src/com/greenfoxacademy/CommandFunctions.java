@@ -10,7 +10,7 @@ import java.util.Collections;
 
 public class CommandFunctions {
   private static final String dataRelativePath = "todo.txt";
-  
+
   public static Boolean addTask(String name) {
     String taskName = "\n" + name;
     appendToFile(Collections.singleton(taskName));
@@ -25,11 +25,17 @@ public class CommandFunctions {
     return true;
   }
 
-  public static Boolean completeTask(String[] args) {
-    int index = Integer.parseInt(args[1]) - 1;
+  public static Boolean completeTask(String indexStr) {
+    int index = Integer.parseInt(indexStr) - 1;
     ToDoList toDoList = new ToDoList(getDataFromFile());
     toDoList.doTask(index);
     writeToFile(toDoList.exportToFile());
+    return true;
+  }
+
+  public static Boolean listTasks(String indexStr) {
+    ToDoList toDoList = new ToDoList(getDataFromFile());
+    System.out.println(toDoList);
     return true;
   }
 
