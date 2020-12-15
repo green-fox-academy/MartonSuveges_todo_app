@@ -22,7 +22,7 @@ public class ToDoTask {
     return "[" + (isDone ? "X" : " ") + "] " + name;
   }
 
-  public void doTask() {
+  public void completeTask() {
     this.isDone = true;
   }
 }

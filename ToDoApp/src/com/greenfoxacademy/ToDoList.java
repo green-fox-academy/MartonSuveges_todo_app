@@ -20,8 +20,16 @@ public class ToDoList {
     }
   }
 
-  public void doTask(int index) {
-    toDoList.get(index).doTask();
+  public void addTask(String name) {
+    toDoList.add(new ToDoTask(name));
+  }
+
+  public void removeTask(int index) {
+    toDoList.remove(index);
+  }
+
+  public void completeTask(int index) {
+    toDoList.get(index).completeTask();
   }
 
   public int size() {

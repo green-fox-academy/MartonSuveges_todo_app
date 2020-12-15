@@ -67,6 +67,18 @@ public class ArgumentHandler {
     return -1;
   }
 
+  public void runCommand(String[] args) {
+    for (Command command : commands) {
+      if (args[0].equals(command.getCallArg())) {
+        if (args.length > 1) {
+          command.getFunction().apply(args[1]);
+        } else {
+          command.getFunction().apply(null);
+        }
+      }
+    }
+  }
+
   private void initArgData() {
     commands.add(new Command(
         "-l", "Kilistázza a feladatokat", ArgTypes.NULL, CommandFunctions::listTasks));

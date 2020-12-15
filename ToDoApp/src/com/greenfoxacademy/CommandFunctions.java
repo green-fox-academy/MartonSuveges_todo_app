@@ -6,35 +6,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class CommandFunctions {
   private static final String dataRelativePath = "todo.txt";
+  private static ToDoList toDoList = new ToDoList(getDataFromFile());
+
+  public static ToDoList getToDoList() {
+    return toDoList;
+  }
 
   public static Boolean addTask(String name) {
-    String taskName = "\n" + name;
-    appendToFile(Collections.singleton(taskName));
+    toDoList.addTask(name);
     return true;
   }
 
   public static Boolean removeTask(String indexStr) {
     int index = Integer.parseInt(indexStr) - 1;
-    ArrayList<String> lines = getDataFromFile();
-    lines.remove(index);
-    writeToFile(lines);
+    toDoList.removeTask(index);
     return true;
   }
 
   public static Boolean completeTask(String indexStr) {
     int index = Integer.parseInt(indexStr) - 1;
-    ToDoList toDoList = new ToDoList(getDataFromFile());
-    toDoList.doTask(index);
-    writeToFile(toDoList.exportToFile());
+    toDoList.completeTask(index);
     return true;
   }
 
   public static Boolean listTasks(String indexStr) {
-    ToDoList toDoList = new ToDoList(getDataFromFile());
     System.out.println(toDoList);
     return true;
   }

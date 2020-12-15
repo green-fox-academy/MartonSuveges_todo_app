@@ -4,11 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class Main {
 
@@ -17,39 +14,29 @@ public class Main {
   private static ToDoList toDoList;
 
   public static void main(String[] args) {
-    initArgDescriptions();
-    if (checkArg(args) != null) {
-      toDoList = new ToDoList(getDataFromFile());
-      if (args[0].equals("-l")) {
-        System.out.println(toDoList);
-      } else if (args[0].equals("-a")) {
-        addTask(args);
-      } else if (args[0].equals("-r")) {
-        removeTask(args);
-      } else if (args[0].equals("-c")) {
-        completeTask(args);
-      }
-    }
-  }
-
-  private static void initArgDescriptions() {
-    argDescriptions.put("-l", "Kilistázza a feladatokat");
-    argDescriptions.put("-a", "Új feladatot ad hozzá");
-    argDescriptions.put("-r", "Eltávolít egy feladatot");
-    argDescriptions.put("-c", "Teljesít egy feladatot");
-  }
-
-  public static String checkArg(String[] args) {
-    if (args.length != 0) {
-      for (String key : argDescriptions.keySet()) {
-        if (args[0].equals(key)) {
-          return key;
+    toDoList = CommandFunctions.getToDoList();
+    ArgumentHandler argumentHandler = new ArgumentHandler(args);
+    int i = 0;
+    while (i < args.length) {
+      int checkResult = argumentHandler.checkArg(i, toDoList);
+      String[] commandArgs = new String[checkResult + 1];
+      if (checkResult < 0) {
+        return;
+      } else if (checkResult == 0) {
+        commandArgs[0] = args[i];
+        for (int j = 1; j < commandArgs.length; j++) {
+          commandArgs[j] = null;
         }
+        argumentHandler.runCommand(commandArgs);
+      } else if (checkResult > 0) {
+        for (int j = 0; j < commandArgs.length; j++) {
+          commandArgs[j] = args[i + j];
+        }
+        argumentHandler.runCommand(commandArgs);
       }
-      System.out.println("Nem támogatott argumentum!");
+      i += 1 + checkResult;
     }
-    System.out.println(userInstructions());
-    return null;
+    writeToFile(toDoList.exportToFile());
   }
 
   private static ArrayList<String> getDataFromFile() {
@@ -63,74 +50,6 @@ public class Main {
     return lines;
   }
 
-  private static void addTask(String[] args) {
-
-    if (args.length < 2 || args[1].equals("")) {
-      System.out.println("Nem lehetséges új feladat hozzáadása: nincs megadva a feladat!");
-      return;
-    }
-
-    String taskName = "\n" + args[1];
-    appendToFile(Collections.singleton(taskName));
-  }
-
-  private static void removeTask(String[] args) {
-    if (args.length < 2) {
-      System.out.println("Nem lehetséges az eltávolítás: nem adott meg indexet!");
-      return;
-    }
-
-    int index;
-    try {
-      index = Integer.parseInt(args[1]) - 1;
-    } catch (NumberFormatException numberFormatException) {
-      System.out.println("Nem lehetséges az eltávolítás: a megadott index nem szám!");
-      return;
-    }
-
-    ArrayList<String> lines = getDataFromFile();
-    if (index >= lines.size()) {
-      System.out.println("Nem lehetséges az eltávolítás: túlindexelési probléma adódott!");
-      return;
-    }
-
-    lines.remove(index);
-    writeToFile(lines);
-  }
-
-  private static void completeTask(String[] args) {
-    if (args.length < 2) {
-      System.out.println("Nem lehetséges a feladat végrehajtása: nem adtál meg indexet!");
-      return;
-    }
-
-    int index;
-    try {
-      index = Integer.parseInt(args[1]) - 1;
-    } catch (NumberFormatException numberFormatException) {
-      System.out.println("Nem lehetséges a feladat végrehajtása: a megadott index nem szám");
-      return;
-    }
-
-    if (index >= toDoList.size()) {
-      System.out.println("Nem lehetséges a feladat végrehajtása: túlindexelési probléma adódott!");
-      return;
-    }
-
-    toDoList.doTask(index);
-
-    writeToFile(toDoList.exportToFile());
-  }
-
-  private static void appendToFile(Iterable output) {
-    Path path = Paths.get(dataRelativePath);
-    try {
-      Files.write(path, output, StandardOpenOption.APPEND);
-    } catch (IOException e) {
-      throw new RuntimeException("Can't write to " + path.toAbsolutePath().toString());
-    }
-  }
-
   private static void writeToFile(Iterable output) {
     Path path = Paths.get(dataRelativePath);
     try {
@@ -138,20 +57,5 @@ public class Main {
     } catch (IOException e) {
       throw new RuntimeException("Can't write to " + path.toAbsolutePath().toString());
     }
-  }
-
-  public static String userInstructions() {
-    StringBuilder builder = new StringBuilder();
-    builder.append("\nParancssori Todo applikáció\n");
-    builder.append("=============================\n\n");
-    builder.append("Parancssori argumentumok:\n");
-    for (Map.Entry<String, String> entry : argDescriptions.entrySet()) {
-      builder.append("\t")
-          .append(entry.getKey())
-          .append("\t ")
-          .append(entry.getValue())
-          .append("\n");
-    }
-    return builder.toString();
   }
 }
